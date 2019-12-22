@@ -18,9 +18,6 @@ export_file_name = 'export.pkl'
 classes = ['tiger', 'cheetah', 'lion']
 path = Path(__file__).parent
 
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
-
-
 templates = Jinja2Templates(directory='templates')
 
 async def homepage(request):
@@ -32,6 +29,11 @@ routes = [
 ]
 
 app = Starlette(debug=True, routes=routes)
+
+
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
+
+
 
 async def download_file(url, dest):
     if dest.exists(): return
