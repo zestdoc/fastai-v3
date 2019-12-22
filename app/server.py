@@ -18,8 +18,6 @@ export_file_name = 'export.pkl'
 classes = ['tiger', 'cheetah', 'lion']
 path = Path(__file__).parent
 
-app = Starlette(debug=True, routes=routes)
-
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
 
 
@@ -32,7 +30,6 @@ routes = [
     Route('/', endpoint=homepage),
     Mount('/', StaticFiles(directory='templates'), name='templates')
 ]
-
 
 app = Starlette(debug=True, routes=routes)
 
