@@ -17,7 +17,7 @@ path = Path(__file__).parent
 
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
-app.mount('/static', StaticFiles(directory='app/static'))
+app.mount('/templates', StaticFiles(directory='app/templates'))
 
 
 async def download_file(url, dest):
@@ -51,11 +51,11 @@ loop.close()
 
 @app.route('/')
 async def homepage(request):
-    html_file = path / 'view' / 'index.html'
+    html_file = path / 'templates' / 'index.html'
     return HTMLResponse(html_file.open().read())
 
 
-@app.route('/analyze', methods=['POST'])
+@app.route('/image', methods=['POST'])
 async def analyze(request):
     img_data = await request.form()
     img_bytes = await (img_data['file'].read())
