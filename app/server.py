@@ -17,6 +17,7 @@ path = Path(__file__).parent
 
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
+#app.route('/', homepage, methods=['GET'])
 app.mount('/', StaticFiles(directory='app/templates'))
 
 
@@ -49,7 +50,7 @@ learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
 loop.close()
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 async def homepage(request):
     html_file = path / 'templates' / 'index.html'
     return HTMLResponse(html_file.open().read())
