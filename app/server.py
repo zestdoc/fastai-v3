@@ -8,6 +8,9 @@ from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
+from starlette.routing import Route, Mount
+from starlette.responses import FileResponse
 
 export_file_url = 'https://drive.google.com/uc?export=download&id=1Wma3ZbiuQDl7cAH6EKmpN3hlC3n2kuZ2'
 export_file_name = 'export.pkl'
@@ -15,11 +18,23 @@ export_file_name = 'export.pkl'
 classes = ['tiger', 'cheetah', 'lion']
 path = Path(__file__).parent
 
-app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
-#app.route('/', homepage, methods=['GET'])
-app.mount('/templates', StaticFiles(directory='app/templates'))
+app = Starlette(debug=True, routes=routes)
 
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
+
+
+templates = Jinja2Templates(directory='templates')
+
+async def homepage(request):
+    return FileResponse('templates/index.html')
+
+routes = [
+    Route('/', endpoint=homepage),
+    Mount('/', StaticFiles(directory='templates'), name='templates')
+]
+
+
+app = Starlette(debug=True, routes=routes)
 
 async def download_file(url, dest):
     if dest.exists(): return
@@ -48,12 +63,6 @@ loop = asyncio.get_event_loop()
 tasks = [asyncio.ensure_future(setup_learner())]
 learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
 loop.close()
-
-
-@app.route('/', methods=['GET'])
-async def homepage(request):
-    html_file = path / 'templates' / 'index.html'
-    return HTMLResponse(html_file.open().read())
 
 
 @app.route('/image', methods=['POST'])
